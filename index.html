@@ -6,7 +6,10 @@
 
   <title>Swim AR Demo</title>
 
+  <!-- A-Frame -->
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
+
+  <!-- AR.js NFT Image Tracking -->
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
   <style>
@@ -30,15 +33,21 @@
       font-family: Arial, sans-serif;
       text-align: center;
     }
+
+    .arjs-loader div {
+      font-size: 20px;
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- Loading screen -->
   <div class="arjs-loader">
     <div>Loading AR...</div>
   </div>
 
+  <!-- AR Scene -->
   <a-scene
     vr-mode-ui="enabled: false"
     renderer="logarithmicDepthBuffer: true; precision: medium;"
@@ -46,19 +55,54 @@
     arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
 
+    <!-- Swimming video -->
+    <video
+      id="swimVideo"
+      src="swim.mp4"
+      preload="auto"
+      loop
+      muted
+      playsinline
+      webkit-playsinline
+    ></video>
+
+    <!-- Your swimming photo marker -->
     <a-nft
       type="nft"
-      url="YOUR-IMAGE-TARGET"
+      url="https://eitelenzphotos.github.io/swim-ar-demo/alexa"
       smooth="true"
       smoothCount="10"
       smoothTolerance="0.01"
       smoothThreshold="5"
     >
+
+      <!-- Video appears when the photo is detected -->
+      <a-video
+        src="#swimVideo"
+        position="0 0 0"
+        rotation="-90 0 0"
+        width="1"
+        height="0.5625"
+      >
+      </a-video>
+
     </a-nft>
 
     <a-entity camera></a-entity>
 
   </a-scene>
+
+  <script>
+    const video = document.querySelector("#swimVideo");
+
+    document.addEventListener("click", function () {
+      video.play().catch(() => {});
+    });
+
+    document.addEventListener("touchstart", function () {
+      video.play().catch(() => {});
+    });
+  </script>
 
 </body>
 </html>
