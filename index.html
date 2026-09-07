@@ -7,7 +7,7 @@
   <title>Swimming AR</title>
 
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
     body {
@@ -32,88 +32,82 @@
 
 <body>
 
-<button id="startButton">START AR</button>
+  <button id="startButton">START AR</button>
 
-<a-scene
-  mindar-image="imageTargetSrc: ./targets.mind;"
-  color-space="sRGB"
-  renderer="colorManagement: true"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  embedded
->
-
-  <a-assets>
-    <video
-      id="swimVideo"
-      src="./swim.mp4"
-      preload="auto"
-      loop
-      muted
-      playsinline
-      webkit-playsinline
-    ></video>
-  </a-assets>
-
-  <a-camera
-    position="0 0 0"
-    look-controls="enabled: false"
-  ></a-camera>
-
-  <a-entity
-    id="target"
-    mindar-image-target="targetIndex: 0"
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no; uiScanning: no;"
+    color-space="sRGB"
+    renderer="colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    embedded
   >
 
-    <a-video
-      src="#swimVideo"
+    <a-assets>
+      <video
+        id="swimVideo"
+        src="./swim.mp4"
+        preload="auto"
+        loop
+        muted
+        playsinline
+        webkit-playsinline
+      ></video>
+    </a-assets>
+
+    <a-camera
       position="0 0 0"
-      width="1"
-      height="0.5625"
-    ></a-video>
+      look-controls="enabled: false">
+    </a-camera>
 
-  </a-entity>
+    <a-entity
+      mindar-image-target="targetIndex: 0">
 
-</a-scene>
+      <a-video
+        src="#swimVideo"
+        position="0 0 0"
+        width="1"
+        height="0.5625">
+      </a-video>
 
-<script>
+    </a-entity>
 
-  const startButton = document.querySelector("#startButton");
-  const video = document.querySelector("#swimVideo");
-  const target = document.querySelector("#target");
+  </a-scene>
 
-  startButton.addEventListener("click", async () => {
+  <script>
+    const startButton = document.querySelector("#startButton");
+    const scene = document.querySelector("a-scene");
+    const video = document.querySelector("#swimVideo");
+    const target = document.querySelector("[mindar-image-target]");
 
-    startButton.style.display = "none";
+    startButton.addEventListener("click", async () => {
 
-    try {
-      await video.play();
-      video.pause();
-      video.currentTime = 0;
-    } catch (error) {
-      console.log(error);
-    }
-  });
+      startButton.style.display = "none";
 
-  target.addEventListener("targetFound", () => {
+      try {
+        await video.play();
+        video.pause();
+        video.currentTime = 0;
+      } catch (error) {
+        console.log(error);
+      }
 
-    console.log("TARGET FOUND");
+      const mindarSystem = scene.systems["mindar-image-system"];
 
-    video.play().catch(error => {
-      console.log("Video play blocked:", error);
+      if (mindarSystem) {
+        mindarSystem.start();
+      }
     });
 
-  });
+    target.addEventListener("targetFound", () => {
+      video.currentTime = 0;
+      video.play();
+    });
 
-  target.addEventListener("targetLost", () => {
-
-    console.log("TARGET LOST");
-
-    video.pause();
-
-  });
-
-</script>
+    target.addEventListener("targetLost", () => {
+      video.pause();
+    });
+  </script>
 
 </body>
 </html>
