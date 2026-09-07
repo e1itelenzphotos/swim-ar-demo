@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Swim AR Demo</title>
+  <title>AR Test</title>
 
   <!-- A-Frame -->
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
 
-  <!-- AR.js Pattern Marker Tracking -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <!-- AR.js NFT / Image Tracking -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
   <style>
     body {
@@ -18,87 +18,99 @@
       overflow: hidden;
     }
 
-    .arjs-loader {
+    #message {
       position: fixed;
-      top: 0;
+      top: 15px;
       left: 0;
       width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      text-align: center;
       color: white;
       font-family: Arial, sans-serif;
-      font-size: 20px;
+      font-size: 18px;
+      z-index: 9999;
+      pointer-events: none;
+      text-shadow: 0 2px 4px black;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="arjs-loader">
-    Loading AR...
-  </div>
+<div id="message">
+  Point your camera at the AR target
+</div>
 
-  <a-scene
-    embedded
-    vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true; precision: medium;"
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-  >
+<a-scene
+  vr-mode-ui="enabled: false"
+  renderer="antialias: true; alpha: true; precision: medium;"
+  embedded
+  arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+>
 
-    <!-- Swimming video -->
+  <!-- SAMPLE VIDEO -->
+  <a-assets>
     <video
-      id="swimVideo"
-      src="swim.mp4"
+      id="testVideo"
+      src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
       preload="auto"
       loop
       muted
       playsinline
-      webkit-playsinline>
+      webkit-playsinline
+      crossorigin="anonymous">
     </video>
+  </a-assets>
 
-    <!-- ORANGE STICKER TARGET -->
-   <a-marker
-    type="pattern"
-    url="https://raw.githubusercontent.com/e1itelenzphotos/swim-ar-demo/main/pattern-arjs_target_sticker.patt">
 
-      <a-video
-        src="#swimVideo"
-        position="0 0 0"
-        rotation="-90 0 0"
-        width="1"
-        height="0.5625">
-      </a-video>
+  <!-- YOUR EXISTING ALEXA NFT TARGET -->
+  <a-nft
+    id="target"
+    type="nft"
+    url="https://raw.githubusercontent.com/e1telenzphotos/swim-ar-demo/main/alexa"
+    smooth="true"
+    smoothCount="10"
+    smoothTolerance="0.01"
+    smoothThreshold="5"
+  >
 
-    </a-marker>
+    <!-- VIDEO -->
+    <a-video
+      src="#testVideo"
+      position="50 150 -100"
+      rotation="90 0 180"
+      width="300"
+      height="175">
+    </a-video>
 
-    <a-entity camera></a-entity>
+  </a-nft>
 
-  </a-scene>
 
-  <script>
+  <a-entity camera></a-entity>
 
-    const video = document.querySelector("#swimVideo");
-    const loader = document.querySelector(".arjs-loader");
+</a-scene>
 
-    window.addEventListener("load", function () {
-      setTimeout(function () {
-        loader.style.display = "none";
-      }, 3000);
-    });
 
-    document.addEventListener("click", function () {
-      video.play().catch(() => {});
-    });
+<script>
 
-    document.addEventListener("touchstart", function () {
-      video.play().catch(() => {});
-    });
+const target = document.querySelector("#target");
+const video = document.querySelector("#testVideo");
 
-  </script>
+target.addEventListener("markerFound", function () {
+  console.log("TARGET FOUND!");
+
+  video.play().catch(function(error) {
+    console.log("Video play error:", error);
+  });
+});
+
+target.addEventListener("markerLost", function () {
+  console.log("TARGET LOST!");
+
+  video.pause();
+  video.currentTime = 0;
+});
+
+</script>
 
 </body>
 </html>
