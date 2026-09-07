@@ -9,8 +9,8 @@
   <!-- A-Frame -->
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
 
-  <!-- AR.js NFT Image Tracking -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  <!-- AR.js Pattern Marker Tracking -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
   <style>
     body {
@@ -19,22 +19,18 @@
     }
 
     .arjs-loader {
-      height: 100%;
-      width: 100%;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      background-color: rgba(0, 0, 0, 0.85);
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
       z-index: 9999;
       display: flex;
       justify-content: center;
       align-items: center;
       color: white;
       font-family: Arial, sans-serif;
-      text-align: center;
-    }
-
-    .arjs-loader div {
       font-size: 20px;
     }
   </style>
@@ -42,17 +38,15 @@
 
 <body>
 
-  <!-- Loading screen -->
   <div class="arjs-loader">
-    <div>Loading AR...</div>
+    Loading AR...
   </div>
 
-  <!-- AR Scene -->
   <a-scene
+    embedded
     vr-mode-ui="enabled: false"
     renderer="logarithmicDepthBuffer: true; precision: medium;"
-    embedded
-    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    arjs="sourceType: webcam; debugUIEnabled: false;"
   >
 
     <!-- Swimming video -->
@@ -63,37 +57,38 @@
       loop
       muted
       playsinline
-      webkit-playsinline
-    ></video>
+      webkit-playsinline>
+    </video>
 
-    <!-- Your swimming photo marker -->
-    <a-nft
-      type="nft"
-      url="https://e1itelenzphotos.github.io/swim-ar-demo/alexa"
-      smooth="true"
-      smoothCount="10"
-      smoothTolerance="0.01"
-      smoothThreshold="5"
-    >
+    <!-- ORANGE STICKER TARGET -->
+    <a-marker
+      type="pattern"
+      url="pattern-arjs_target_sticker.patt">
 
-      <!-- Video appears when the photo is detected -->
       <a-video
         src="#swimVideo"
         position="0 0 0"
         rotation="-90 0 0"
         width="1"
-        height="0.5625"
-      >
+        height="0.5625">
       </a-video>
 
-    </a-nft>
+    </a-marker>
 
     <a-entity camera></a-entity>
 
   </a-scene>
 
   <script>
+
     const video = document.querySelector("#swimVideo");
+    const loader = document.querySelector(".arjs-loader");
+
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        loader.style.display = "none";
+      }, 3000);
+    });
 
     document.addEventListener("click", function () {
       video.play().catch(() => {});
@@ -102,6 +97,7 @@
     document.addEventListener("touchstart", function () {
       video.play().catch(() => {});
     });
+
   </script>
 
 </body>
